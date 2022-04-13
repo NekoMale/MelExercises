@@ -1,0 +1,3 @@
+string $selections[] = `ls -selection`;
+float $yPos = getAttr ($selections[0] + ".translateY");
+setAttr ($selections[0] + ".translateY") ($yPos + 1.5);

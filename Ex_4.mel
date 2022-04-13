@@ -1,0 +1,8 @@
+string $joints[] = `ls -selection -type joint`;
+print("Joints: " + size($joints) + "\n");
+
+string $meshes[] = `ls -selection -type mesh`;
+print("Meshes: " + size($meshes) + "\n");
+
+string $transforms[] = `ls -selection -type transform`;
+print("Transforms: " + size($transforms) + "\n");

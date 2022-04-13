@@ -1,0 +1,22 @@
+string $materials[] = {"lambert", "lambert", "blinn"};
+
+for($i=0; $i<3; ++$i)
+{
+    string $s[] = `polySphere -r 1`;
+    string $c[] = `polyCube`;
+    
+    string $cube = $c[0];
+    string $sphere = $s[0]; 
+    setAttr($sphere + ".translateX ") (5 * $i);
+    
+    setAttr($cube + ".translateX ") (5 * $i);
+    setAttr($cube + ".translateY ") 3;
+
+    string $material = `shadingNode -asShader $materials[$i]`;
+    setAttr ($material + ".color") ($i == 0) ($i == 1) ($i == 2);
+
+    select -r $cube;
+    sets -e -forceElement ($cube + "sSG");
+
+    hyperShade -assign $material;
+}

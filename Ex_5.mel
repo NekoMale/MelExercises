@@ -1,0 +1,78 @@
+if (`window -exists "CustomWindow"`)
+{
+    deleteUI "CustomWindow";
+}
+window "CustomWindow";
+
+columnLayout -adjustableColumn on;
+    rowLayout -numberOfColumns 2;
+        text -align "left" - font "boldLabelFont" -label "Name: ";
+        string $userNameTextField = `textField -placeholderText "insert your name" -width 160`;
+    setParent ..;
+
+    button -height 40 -label "Log In" -command "LogIn($userNameTextField)";
+    button -height 40 -label "Create objects" -command "CreateObjects";
+    button -height 40 -label "Move selected obejcts" -command "MoveSelectedObjects";
+    button -height 40 -label "Check how many selected objects" -command "NumberSelectedObjects";
+    frameLayout -label "History" -collapsable true -collapse true;
+        text -align "left" - font "smallBoldLabelFont" -label "" historyField;
+    setParent ..;
+setParent ..;
+
+showWindow "CustomWindow";
+
+proc LogIn(string $userNameTextField)
+{
+    string $loggedUserName = `textField -query -text $userNameTextField`;
+    print ("Welcome back " + $loggedUserName + "!\n");
+    RefreshHistory($loggedUserName + " logged\n");
+}
+
+proc CreateObjects()
+{
+    string $materials[] = {"lambert", "lambert", "blinn"};
+
+    for($i=0; $i<3; ++$i)
+    {
+        string $s[] = `polySphere -r 1`;
+        string $c[] = `polyCube`;
+        
+        string $cube = $c[0];
+        string $sphere = $s[0]; 
+        setAttr($sphere + ".translateX ") (5 * $i);
+        
+        setAttr($cube + ".translateX ") (5 * $i);
+        setAttr($cube + ".translateY ") 3;
+    
+        string $material = `shadingNode -asShader $materials[$i]`;
+        setAttr ($material + ".color") ($i == 0) ($i == 1) ($i == 2);
+    
+        select -r $cube;    
+        hyperShade -assign $material;
+    }
+    RefreshHistory("Created 6 objects (3 spheres, 3 cubes)\n");
+}
+
+proc MoveSelectedObjects()
+{
+    string $selections[] = `ls -selection`;
+    for($selectio in $selections)
+    {
+        float $yPos = getAttr ($selectio + ".translateY");
+        setAttr ($selectio + ".translateY") ($yPos + 1.5);
+    }
+    RefreshHistory("Moved " + size($selections) + " objects up\n");
+}
+
+proc NumberSelectedObjects()
+{
+    string $selections[] = `ls -selection`;
+    float $nSelectedObjects = size($selections);
+    print("Objects selected: " + $nSelectedObjects);
+}
+
+proc RefreshHistory(string $lastCommand)
+{
+    string $existingHistory = `text -query -label historyField`;
+    text -e -label ($lastCommand + "\n" + $existingHistory) historyField;
+}
